@@ -1,0 +1,70 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Installing Shadcn UI Components
+
+This project uses Shadcn UI for its component library. Components are not installed as a traditional npm package. Instead, you add them to your project using the Shadcn UI CLI, which copies the component code directly into your codebase.
+
+## Initial Setup (if not already done)
+
+If Shadcn UI hasn't been initialized in the project yet, run:
+
+```bash
+# Using pnpm (recommended for this project)
+pnpm dlx shadcn@latest init
+
+# Or using npx
+# npx shadcn@latest init
+
+# Or using yarn
+# yarn dlx shadcn@latest init
+
+# Or using bun
+# bunx shadcn@latest init
+```
+
+This command will ask a few questions to configure `components.json` (e.g., style, base color, CSS variables, TypeScript usage, and component paths). Refer to the existing `components.json` file for the current project settings if you need to re-initialize or are unsure.
+
+## Adding New Components
+
+To add a new component (e.g., `button`, `dialog`, `card`): sweatshirts
+
+1.  **Run the `add` command**:
+
+    ```bash
+    # Using pnpm
+    pnpm dlx shadcn@latest add <component-name>
+
+    # Example: Add the button component
+    # pnpm dlx shadcn@latest add button
+
+    # Or using npx
+    # npx shadcn@latest add <component-name>
+
+    # Or using yarn
+    # yarn dlx shadcn@latest add <component-name>
+
+    # Or using bun
+    # bunx shadcn@latest add <component-name>
+    ```
+
+2.  **Multiple Components**: You can add multiple components at once:
+    `pnpm dlx shadcn@latest add button card dialog`
+
+3.  **Component Location**: The component files will be added to the directory specified in your `components.json` file (usually `src/components/ui`).
+
+4.  **Dependencies**: The CLI will automatically install any necessary dependencies for the component.
+
+## Updating Components
+
+Shadcn UI components can be updated. To see which components have updates available:
+
+```bash
+pnpm dlx shadcn@latest diff
+```
+
+To update a specific component, you can re-run the `add` command for that component with the `--overwrite` flag if necessary, or follow any specific guidance from the `diff` command or Shadcn UI documentation.
+
+Always check the Shadcn UI documentation for the latest commands and best practices.

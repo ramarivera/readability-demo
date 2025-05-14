@@ -1,0 +1,36 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Project Structure Overview
+
+This is a Next.js project bootstrapped with `create-next-app` and configured with TypeScript, ESLint, Prettier, and Shadcn UI.
+
+## Key Directories:
+
+*   `src/`: Contains all the application code.
+    *   `src/app/`: Houses the application's routes, layouts, and pages (using the App Router).
+    *   `src/components/`: For UI components, including those from Shadcn UI.
+    *   `src/lib/`: Utility functions, helper modules (e.g., `cn` for Shadcn UI).
+    *   `src/styles/`: Global styles or specific style modules.
+*   `public/`: Static assets that are served directly (e.g., images, fonts).
+*   `.cursor/`: Contains Cursor-specific configurations, including these rules.
+    *   `.cursor/rules/`: Directory for project-specific Cursor rules in MDC format.
+
+## Key Files:
+
+*   `next.config.ts` (or `next.config.mjs`): Configuration for Next.js.
+*   `tsconfig.json`: TypeScript configuration.
+*   `package.json`: Project dependencies and scripts.
+*   `components.json`: Configuration for Shadcn UI, specifying where components are located and other UI-related settings.
+*   `postcss.config.mjs`: PostCSS configuration (often used with Tailwind CSS).
+*   `tailwind.config.ts` (if present, or configured within `postcss.config.mjs`): Tailwind CSS configuration.
+*   `eslint.config.mjs` (or `.eslintrc.js`/`.json`): ESLint configuration for code linting.
+*   `.prettierrc` / `.prettierignore`: Prettier configuration for code formatting.
+*   `README.md`: Project overview, setup instructions, and other important information.
+*   `.gitignore`: Specifies intentionally untracked files that Git should ignore.
+*   `yarn.lock` / `package-lock.json` / `pnpm-lock.yaml`: Lock files for dependency management.
+
+This structure helps in organizing the codebase efficiently and follows common Next.js conventions.
+When adding new features, ensure they are placed in the appropriate directories (e.g., new pages in `src/app/`, reusable UI elements in `src/components/`).
