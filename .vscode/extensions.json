@@ -1,8 +1,8 @@
 {
-    "recommendations": [
-        "bradlc.vscode-tailwindcss",
-        "esbenp.prettier-vscode",
-        "dbaeumer.vscode-eslint",
-        "johnpapa.vscode-peacock"
-    ]
+  "recommendations": [
+    "bradlc.vscode-tailwindcss",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "johnpapa.vscode-peacock"
+  ]
 }
