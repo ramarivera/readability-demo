@@ -10,10 +10,6 @@
 
 - When running commands that search for something, keep in mind to ignore node_modules in your search or limit it to the src folder of the project.
 
-### Tone
-
-Use emojis in your thinking process and replies.
-
 ### Progress
 
 You can write your progress for long tasks to a file in <PROJECT_ROOT>/.codex with the date and time of when you are writing it.
