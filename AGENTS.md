@@ -96,7 +96,7 @@ This project adheres to standard Next.js practices and some project-specific con
 
 ### 5. Styling
 
-- **Tailwind CSS**: This project uses Tailwind CSS for utility-first styling. Configure it in `tailwind.config.ts`.
+- **Tailwind CSS**: This project uses Tailwind CSS for utility-first styling. In this project by default there is no tailwind.config.ts since its a brand new project that uses CSS first configuration. Search the latest tailwind documentation for details.
 - **Global Styles**: Global styles are defined in `src/app/globals.css` (or a similar file imported into the root layout).
 - **CSS Modules**: For component-scoped CSS, CSS Modules can be used if preferred over exclusively using Tailwind, but Tailwind is the primary styling method.
 - **`cn` Utility**: Use the `cn` utility from `src/lib/utils.ts` (provided by Shadcn UI) for conditionally applying Tailwind classes.
