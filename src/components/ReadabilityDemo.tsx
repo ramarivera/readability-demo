@@ -34,13 +34,17 @@ export default function ReadabilityDemo() {
   const [parser, setParser] = useState<"readability" | "simple">("readability");
   const [parseResult, setParseResult] = useState<ArticleResult | null>(null);
   const [markdownOutput, setMarkdownOutput] = useState("");
+  const [activeTab, setActiveTab] = useState<"preview" | "raw">("preview");
 
   const formatHtml = () => {
     const formatted = beautifyHtml(htmlInput, {
       indent_size: 2,
-      preserve_newlines: true,
     });
-    setHtmlInput(formatted);
+    const noEmptyLines = formatted
+      .split("\n")
+      .filter((line) => line.trim() !== "")
+      .join("\n");
+    setHtmlInput(noEmptyLines);
   };
 
   const parseArticle = () => {
@@ -145,62 +149,88 @@ export default function ReadabilityDemo() {
         />
       </div>
       <div>
-        <div className="mb-2 font-medium">Markdown Output (Live Preview)</div>
-        <div className="border rounded p-4 max-w-full overflow-auto break-words prose max-w-none">
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm, remarkBreaks]}
-            rehypePlugins={[rehypeRaw]}
-            skipHtml={false}
-            urlTransform={(url) => url}
-            components={{
-              h1: ({ children, ...props }) => (
-                <h1 className="text-3xl font-bold mb-4" {...props}>
-                  {children}
-                </h1>
-              ),
-              h2: ({ children, ...props }) => (
-                <h2 className="text-2xl font-semibold mb-3" {...props}>
-                  {children}
-                </h2>
-              ),
-              h3: ({ children, ...props }) => (
-                <h3 className="text-xl font-semibold mb-2" {...props}>
-                  {children}
-                </h3>
-              ),
-              p: ({ children, ...props }) => (
-                <p className="mb-4" {...props}>
-                  {children}
-                </p>
-              ),
-              ul: ({ children, ...props }) => (
-                <ul className="list-disc pl-5 mb-4" {...props}>
-                  {children}
-                </ul>
-              ),
-              ol: ({ children, ...props }) => (
-                <ol className="list-decimal pl-5 mb-4" {...props}>
-                  {children}
-                </ol>
-              ),
-              a: ({ href, children, ...props }) => (
-                <a
-                  href={href}
-                  {...props}
-                  className="text-blue-500 hover:underline"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {children}
-                </a>
-              ),
-              img: ({ src, alt, ...props }) =>
-                src ? <img src={src} alt={alt} {...props} className="max-w-full" /> : null,
-            }}
+        <div className="mb-2 font-medium">Markdown Output</div>
+        <div className="flex space-x-4 border-b mb-2">
+          <button
+            className={`px-4 py-2 -mb-px border-b-2 ${
+              activeTab === "preview"
+                ? "border-blue-500 text-blue-500"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            }`}
+            onClick={() => setActiveTab("preview")}
           >
-            {markdownOutput}
-          </ReactMarkdown>
+            Preview
+          </button>
+          <button
+            className={`px-4 py-2 -mb-px border-b-2 ${
+              activeTab === "raw"
+                ? "border-blue-500 text-blue-500"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            }`}
+            onClick={() => setActiveTab("raw")}
+          >
+            Markdown
+          </button>
         </div>
+        {activeTab === "preview" ? (
+          <div className="border rounded p-4 max-w-full overflow-auto break-words prose max-w-none">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm, remarkBreaks]}
+              rehypePlugins={[rehypeRaw]}
+              skipHtml={false}
+              urlTransform={(url) => url}
+              components={{
+                h1: ({ children, ...props }) => (
+                  <h1 className="text-3xl font-bold mb-4" {...props}>
+                    {children}
+                  </h1>
+                ),
+                h2: ({ children, ...props }) => (
+                  <h2 className="text-2xl font-semibold mb-3" {...props}>
+                    {children}
+                  </h2>
+                ),
+                h3: ({ children, ...props }) => (
+                  <h3 className="text-xl font-semibold mb-2" {...props}>
+                    {children}
+                  </h3>
+                ),
+                p: ({ children, ...props }) => (
+                  <p className="mb-4" {...props}>
+                    {children}
+                  </p>
+                ),
+                ul: ({ children, ...props }) => (
+                  <ul className="list-disc pl-5 mb-4" {...props}>
+                    {children}
+                  </ul>
+                ),
+                ol: ({ children, ...props }) => (
+                  <ol className="list-decimal pl-5 mb-4" {...props}>
+                    {children}
+                  </ol>
+                ),
+                a: ({ href, children, ...props }) => (
+                  <a
+                    href={href}
+                    {...props}
+                    className="text-blue-500 hover:underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {children}
+                  </a>
+                ),
+                img: ({ src, alt, ...props }) =>
+                  src ? <img src={src} alt={alt} {...props} className="max-w-full" /> : null,
+              }}
+            >
+              {markdownOutput}
+            </ReactMarkdown>
+          </div>
+        ) : (
+          <Textarea className="font-mono h-40" readOnly value={markdownOutput} />
+        )}
       </div>
     </div>
   );
