@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { html as htmlLang } from "@codemirror/lang-html";
-import { Readability } from "@mozilla/readability";
 import CodeMirror from "@uiw/react-codemirror";
 import { html as beautifyHtml } from "js-beautify";
 import { useState } from "react";
@@ -18,7 +17,6 @@ import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
-import TurndownService from "turndown";
 
 interface ArticleResult {
   title?: string;
@@ -29,9 +27,14 @@ interface ArticleResult {
   textContent: string;
 }
 
-export default function ReadabilityDemo() {
+interface ReadabilityDemoProps {
+  sampleHtml: string;
+}
+export default function ReadabilityDemo({ sampleHtml }: ReadabilityDemoProps) {
   const [htmlInput, setHtmlInput] = useState("");
-  const [parser, setParser] = useState<"readability" | "simple">("readability");
+  const [parser, setParser] = useState<"readability" | "simple" | "postlight" | "defuddle">(
+    "readability",
+  );
   const [parseResult, setParseResult] = useState<ArticleResult | null>(null);
   const [markdownOutput, setMarkdownOutput] = useState("");
   const [activeTab, setActiveTab] = useState<"preview" | "raw">("preview");
@@ -46,72 +49,17 @@ export default function ReadabilityDemo() {
       .join("\n");
     setHtmlInput(noEmptyLines);
   };
+  const loadSample = () => setHtmlInput(sampleHtml);
 
-  const parseArticle = () => {
-    let result: ArticleResult;
-    const doc = new DOMParser().parseFromString(htmlInput, "text/html");
-    if (parser === "readability") {
-      const parsed = new Readability(doc).parse();
-      result = {
-        title: parsed?.title || "",
-        byline: parsed?.byline || "",
-        dir: parsed?.dir || doc.dir || "ltr",
-        excerpt: parsed?.excerpt || "",
-        content: parsed?.content || "",
-        textContent: parsed?.textContent || "",
-      };
-    } else {
-      const articleEl = doc.querySelector("article");
-      const content = articleEl
-        ? articleEl.innerHTML
-        : Array.from(doc.querySelectorAll("p"))
-            .map((p) => p.outerHTML)
-            .join("");
-      const textContent = articleEl
-        ? articleEl.textContent || ""
-        : Array.from(doc.querySelectorAll("p"))
-            .map((p) => p.textContent || "")
-            .join("\n");
-      result = {
-        title: doc.title || "",
-        byline: "",
-        dir: doc.dir || "ltr",
-        excerpt: textContent.slice(0, 200),
-        content,
-        textContent,
-      };
-    }
-    setParseResult(result);
-    const td = new TurndownService();
-    // Handle images wrapped in anchor tags first
-    td.addRule("imageLink", {
-      filter: (node) => node.nodeName === "A" && (node as Element).querySelector("img") !== null,
-      replacement: (content, node) => {
-        const img = (node as Element).querySelector("img")!;
-        const alt = img.getAttribute("alt") || "";
-        const src = img.getAttribute("src") || img.getAttribute("data-src") || "";
-        return `![${alt}](${src})`;
-      },
+  const parseArticle = async () => {
+    const response = await fetch("/api/parse", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ html: htmlInput, parserType: parser }),
     });
-    td.addRule("img", {
-      filter: ["img"],
-      replacement: (content, node) => {
-        const imgNode = node as Element;
-        const alt = imgNode.getAttribute("alt") || imgNode.getAttribute("aria-label") || "";
-        const src = imgNode.getAttribute("src") || imgNode.getAttribute("data-src") || "";
-        return `![${alt}](${src})`;
-      },
-    });
-    // Prepend title and byline to markdown output
-    let md = "";
-    if (result.title) {
-      md += `# ${result.title}\n\n`;
-    }
-    if (result.byline) {
-      md += `_${result.byline}_\n\n`;
-    }
-    md += td.turndown(result.content);
-    setMarkdownOutput(md);
+    const data = await response.json();
+    setParseResult(data.result);
+    setMarkdownOutput(data.markdown);
   };
 
   return (
@@ -124,18 +72,29 @@ export default function ReadabilityDemo() {
           extensions={[htmlLang()]}
           onChange={(value) => setHtmlInput(value)}
         />
-        <Button variant="outline" className="mt-2" onClick={formatHtml}>
-          Auto Format HTML
-        </Button>
+        <div className="flex gap-2 mt-2">
+          <Button variant="outline" onClick={formatHtml}>
+            Auto Format HTML
+          </Button>
+          <Button variant="outline" onClick={loadSample}>
+            Load Sample HTML
+          </Button>
+        </div>
       </div>
       <div className="flex items-center gap-2">
-        <Select onValueChange={(value) => setParser(value as "readability" | "simple")}>
+        <Select
+          onValueChange={(value) =>
+            setParser(value as "readability" | "simple" | "postlight" | "defuddle")
+          }
+        >
           <SelectTrigger>
             <SelectValue placeholder="Select parser" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="readability">Readability</SelectItem>
             <SelectItem value="simple">Simple</SelectItem>
+            <SelectItem value="postlight">Postlight</SelectItem>
+            <SelectItem value="defuddle">Defuddle</SelectItem>
           </SelectContent>
         </Select>
         <Button onClick={parseArticle}>Parse HTML</Button>
