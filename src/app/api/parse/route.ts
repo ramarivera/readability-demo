@@ -1,5 +1,5 @@
 import { Readability } from "@mozilla/readability";
-import Parser from "@postlight/parser";
+import Mercury from "@postlight/mercury-parser";
 import { JSDOM } from "jsdom";
 import { NextResponse } from "next/server";
 import TurndownService from "turndown";
@@ -58,7 +58,8 @@ export async function POST(request: Request) {
         textContent,
       };
     } else if (parserType === "postlight") {
-      const parsed = await Parser.parse("", { html });
+      // Use dummy URL and explicit html contentType to force HTML parsing
+      const parsed = await Mercury.parse("http://localhost", { html, contentType: "html" });
       const content = parsed.content || "";
       const textContent = new JSDOM(content).window.document.body.textContent || "";
       result = {
